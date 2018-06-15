@@ -1,4 +1,5 @@
 TODO:
 
-[ ] chatbot Node code
-[ ] Lightbot firmware
+- [ ] chatbot Node code
+  - [ ] Handle edge case w/color types w/spaces
+- [ ] Lightbot firmware
