@@ -27,6 +27,7 @@ let mqttClient = mqtt.connect('https://io.adafruit.com/nodebotanist/feeds/colorb
 
 mqttClient.on('connect', () => {
   console.log('connected!')
+  mqttClient.subscribe('nodebotanist/feeds/colorbot')
 })
 
 mqttClient.on('error', (error) => {
@@ -52,6 +53,7 @@ let knownCommands = {
     } catch (error) {}
     console.log(lightColor)
     if(lightColor){
+      mqttClient.publish('nodebotanist/feeds/colorbot', JSON.stringify(lightColor.color))
       client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
     } else {
       client.action('#nodebotanist', 'Invalid color!')
