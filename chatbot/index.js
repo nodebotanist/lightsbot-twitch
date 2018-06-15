@@ -1,6 +1,7 @@
 const dotenv = require('dotenv').config()
 const tmi= require('tmi.js')
 const color = require('color')
+const mqtt = require('mqtt')
 
 // Valid commands start with:
 let commandPrefix = '!'
@@ -17,6 +18,20 @@ let opts = {
 
 // Create a client with our options:
 let client = new tmi.client(opts)
+
+let mqttClient = mqtt.connect('https://io.adafruit.com/nodebotanist/feeds/colorbot', {
+  username: 'nodebotanist',
+  password: process.env.AIO_KEY,
+  port: 1883
+})
+
+mqttClient.on('connect', () => {
+  console.log('connected!')
+})
+
+mqttClient.on('error', (error) => {
+  console.log(error)
+})
 
 // Register our event handlers (defined below):
 client.on('message', onMessageHandler)
