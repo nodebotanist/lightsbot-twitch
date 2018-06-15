@@ -31,9 +31,16 @@ let knownCommands = {
     client.action("#nodebotanist", "Hi!");
   },
   'color': (target, context, params) => {
-    let lightColor = color(params[0])
+    let lightColor = null
+    try {
+      lightColor = color(params[0])      
+    } catch (error) {}
     console.log(lightColor)
-    client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+    if(lightColor){
+      client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+    } else {
+      client.action('#nodebotanist', 'Invalid color!')
+    }
   }
 }
 
