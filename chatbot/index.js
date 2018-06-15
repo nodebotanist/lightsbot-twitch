@@ -1,5 +1,6 @@
 const dotenv = require('dotenv').config()
 const tmi= require('tmi.js')
+const color = require('color')
 
 // Valid commands start with:
 let commandPrefix = '!'
@@ -28,6 +29,11 @@ client.connect()
 let knownCommands = {
   'hello': (target, context, params) => {
     client.action("#nodebotanist", "Hi!");
+  },
+  'color': (target, context, params) => {
+    let lightColor = color(params[0])
+    console.log(lightColor)
+    client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
   }
 }
 
