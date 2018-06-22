@@ -1,6 +1,7 @@
-#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <stdio.h>
+#include <Adafruit_NeoPixel.h>
 
 // Update these with values suitable for your network.
 
@@ -14,7 +15,9 @@ long lastMsg = 0;
 char msg[50];
 int value = 0;
 
-StaticJsonBuffer<100> jsonBuffer;
+#define PIN 12
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, PIN, NEO_RGB + NEO_KHZ800);
 
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
@@ -22,6 +25,8 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+  strip.begin();
+  rainbowCycle(50);
 }
 
 void setup_wifi() {
@@ -45,29 +50,104 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
+String red = "Red: ";
+String green = "Green: ";
+String blue = "Blue: ";
+
+int redColor, greenColor, blueColor;
+
+void array_to_string(byte array[], unsigned int len, char buffer[])
+{
+    for (unsigned int i = 0; i < len; i++)
+    {
+        byte nib1 = (array[i] >> 4) & 0x0F;
+        byte nib2 = (array[i] >> 0) & 0x0F;
+        buffer[i*2+0] = nib1  < 0xA ? '0' + nib1  : 'A' + nib1  - 0xA;
+        buffer[i*2+1] = nib2  < 0xA ? '0' + nib2  : 'A' + nib2  - 0xA;
+    }
+    buffer[len*2] = '\0';
+}
+
+#define MAX_WORD_COUNT 3
+#define MIN_WORD_COUNT 3
+char *Words[MAX_WORD_COUNT];
+
+byte split_message(char* str) {
+  byte word_count = 0; //number of words
+  char * item = strtok (str, ","); //getting first word (uses space & comma as delimeter)
+
+  while (item != NULL) {
+    if (word_count >= MAX_WORD_COUNT) {
+      break;
+    }
+    Words[word_count] = item;
+    item = strtok (NULL, ","); //getting subsequence word
+    word_count++;
+  }
+  return  word_count;
+}
+
+char payloadString[30];
+
+void colorWipe(uint32_t c, uint8_t wait) {
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, c);
+    strip.show();
+    delay(wait);
+  }
+}
+void rainbowCycle(uint8_t wait) {
+  uint16_t i;
+
+  for(i=0; i< strip.numPixels(); i++) {
+    strip.setPixelColor(i, Wheel((i * 256 / strip.numPixels()) & 255));
+    strip.show();
+    delay(wait);
+  }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
 void callback(char* topic, byte* payload, unsigned int length) {
+  sprintf(payloadString, "%s\0", "");
+  sprintf(payloadString, "%s\0", payload);
+
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
+  Serial.println(payloadString);
 
-  JsonObject& root = jsonBuffer.parseObject(payload);
-
-  Serial.print(printf("Red: %u", root[0]));
-
-  // Switch on the LED if an 1 was received as first character
-  if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-    // but actually the LED is on; this is because
-    // it is acive low on the ESP-01)
+  if(strcmp(payloadString, "rainbow") == 0){
+    Serial.println("Rainbow!!!");
+    rainbowCycle(50);
   } else {
-    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
-  }
+    split_message(payloadString);
 
+    redColor = atoi(Words[0]);
+    greenColor = atoi(Words[1]);
+    blueColor = atoi(Words[2]);
+
+    Serial.println(red + redColor);
+    Serial.println(green + greenColor);
+    Serial.println(blue + blueColor);
+    colorWipe(strip.Color(redColor, greenColor, blueColor), 50);
+  }
 }
+
+
 
 void reconnect() {
   // Loop until we're reconnected

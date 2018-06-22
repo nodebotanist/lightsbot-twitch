@@ -19,14 +19,14 @@ let opts = {
 // Create a client with our options:
 let client = new tmi.client(opts)
 
-let mqttClient = mqtt.connect('https://io.adafruit.com/nodebotanist/feeds/colorbot', {
+let mqttClient = mqtt.connect('mqtt://io.adafruit.com', {
   username: 'nodebotanist',
   password: process.env.AIO_KEY,
   port: 1883
 })
 
 mqttClient.on('connect', () => {
-  console.log('connected!')
+  console.log('connected to adafruit.io!')
   mqttClient.subscribe('nodebotanist/feeds/colorbot')
 })
 
@@ -48,15 +48,22 @@ let knownCommands = {
   },
   'color': (target, context, params) => {
     let lightColor = null
-    try {
-      lightColor = color(params[0])      
-    } catch (error) {}
-    console.log(lightColor)
-    if(lightColor){
-      mqttClient.publish('nodebotanist/feeds/colorbot', JSON.stringify(lightColor.color))
-      client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+    if(params[0] == "rainbow"){
+        mqttClient.publish('nodebotanist/feeds/colorbot', "rainbow")
+        client.action('#nodebotanist', 'Rainbow!')
     } else {
-      client.action('#nodebotanist', 'Invalid color!')
+      try {
+        lightColor = color(params[0])      
+      } catch (error) {}
+      console.log(lightColor)
+      if(lightColor){
+        let result = `${lightColor.color[0]},${lightColor.color[1]},${lightColor.color[2]}`
+        console.log("Publishing: ", result)
+        mqttClient.publish('nodebotanist/feeds/colorbot', result)
+        client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+      } else {
+        client.action('#nodebotanist', 'Invalid color!')
+      }
     }
   }
 }
