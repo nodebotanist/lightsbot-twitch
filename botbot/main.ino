@@ -120,17 +120,17 @@ uint32_t Wheel(byte WheelPos) {
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
+int messageLength, payloadlength;
 void callback(char* topic, byte* payload, unsigned int length) {
-  sprintf(payloadString, "%s\0", "");
-  sprintf(payloadString, "%s\0", payload);
-
+  sprintf(payloadString, "%s", payload);
+  messageLength = sizeof(payloadString);
+  payloadString[messageLength] = '\0';
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
   Serial.println(payloadString);
 
-  if(strcmp(payloadString, "rainbow") == 0){
+  if(strstr(payloadString, "rainbow")){
     Serial.println("Rainbow!!!");
     rainbowCycle(50);
   } else {
@@ -144,6 +144,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println(green + greenColor);
     Serial.println(blue + blueColor);
     colorWipe(strip.Color(redColor, greenColor, blueColor), 50);
+  }
+  for(uint8_t i = 0; i < length; i++) {
+    payload[i] = 0x00;
   }
 }
 
