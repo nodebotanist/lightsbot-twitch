@@ -47,13 +47,14 @@ let knownCommands = {
     client.action("#nodebotanist", "Hi!");
   },
   'color': (target, context, params) => {
+    let colorParam = params.join(' ').toLowerCase();
     let lightColor = null
-    if(params[0] == "rainbow"){
+    if(colorParam == "rainbow"){
         mqttClient.publish('nodebotanist/feeds/colorbot', "rainbow")
         client.action('#nodebotanist', 'Rainbow!')
     } else {
       try {
-        lightColor = color(params[0])      
+        lightColor = color(colorParam)      
       } catch (error) {}
       console.log(lightColor)
       if(lightColor){
