@@ -3,16 +3,18 @@ const tmi= require('tmi.js')
 const color = require('color')
 const mqtt = require('mqtt')
 
-// Valid commands start with:
-let commandPrefix = '!'
+const twitchIRC = process.env.TWITCH_IRC_ROOM
+const adafruitIOFeed = process.env.ADAFRUIT_IO_FEED
+const commandPrefix = '!'
+
 // Define configuration options:
 let opts = {
   identity: {
-    username: 'nodebotanist-lights',
+    username: process.env.TWITCH_USERNAME,
     password: 'oauth:' + process.env.TWITCH_IRC_PASSWORD
   },
   channels: [
-    '#nodebotanist'
+    twitchIRC
   ]
 }
 
@@ -44,14 +46,14 @@ client.connect()
 
 let knownCommands = {
   'hello': (target, context, params) => {
-    client.action("#nodebotanist", "Hi!");
+    client.action(twitchIRC, "Hi!");
   },
   'color': (target, context, params) => {
     let colorParam = params.join(' ').toLowerCase();
     let lightColor = null
     if(colorParam == "rainbow"){
         mqttClient.publish('nodebotanist/feeds/colorbot', "rainbow")
-        client.action('#nodebotanist', 'Rainbow!')
+        client.action(twitchIRC, 'Rainbow!')
     } else {
       try {
         lightColor = color(colorParam)      
@@ -61,9 +63,9 @@ let knownCommands = {
         let result = `${lightColor.color[0]},${lightColor.color[1]},${lightColor.color[2]}`
         console.log("Publishing: ", result)
         mqttClient.publish('nodebotanist/feeds/colorbot', result)
-        client.action('#nodebotanist', `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+        client.action(twitchIRC, `Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
       } else {
-        client.action('#nodebotanist', 'Invalid color!')
+        client.action(twitchIRC, 'Invalid color!')
       }
     }
   }

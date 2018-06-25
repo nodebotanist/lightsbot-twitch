@@ -8,8 +8,10 @@
 
 ```
 TWITCH_IRC_PASSWORD=your_twitch_IRC_password 
+TWITCH_IRC_ROOM=usually_your_twitch_username
+TWITCH_USERNAME=your_twitch_username
 AIO_KEY=your_adafruit_IO_key
 AIO_FEED=your_adafruit_IO_MQTT_key
 ```
 
-1. run `node index.js` to run the chat bot
+1. run `node index.js` to run the chat bot. Make sure the [hardware](../botbot/README.md) is running as well!
