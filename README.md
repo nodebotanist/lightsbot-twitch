@@ -1,16 +1,16 @@
 TODO:
 
 - [x] chatbot Node code
-  - [*] Handles any CSS-parseable color
+  - [x] Handles any CSS-parseable color
   - [ ] Write installation guide
-  - [*] Posts to Adafruit.io
-  - [*] Handles Rainbow custom command
-  - [*] Handle edge case w/color types w/spaces
+  - [x] Posts to Adafruit.io
+  - [x] Handles Rainbow custom command
+  - [x] Handle edge case w/color types w/spaces
 - [x] Lightbot firmware
-  - [*] Takes in 3 integer colors delimited by commas
-  - [*] Lights up in colors published
-  - [*] Connects to WiFi
-  - [*] Connects to Adafruit.io
-  - [*] Handles rainbow edge case
+  - [x] Takes in 3 integer colors delimited by commas
+  - [x] Lights up in colors published
+  - [x] Connects to WiFi
+  - [x] Connects to Adafruit.io
+  - [x] Handles rainbow edge case
   - [ ] Installation guide
   - [ ] Fritzing (wiring) diagram
