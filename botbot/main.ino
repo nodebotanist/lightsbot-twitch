@@ -5,8 +5,8 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "Megaton";
-const char* password = "Thepowerofatom!";
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PSK";
 const char* mqtt_server = "io.adafruit.com";
 
 WiFiClient espClient;
@@ -157,9 +157,9 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("ESP8266Client", "nodebotanist", "5306481abc46a0f6f853c38c9deec7675f62ab1d")) {
+    if (client.connect("ESP8266Client", "YOUR_AIO_USERNAME", "YOUR_AIO_KEY")) {
       Serial.println("connected");
-      client.subscribe("nodebotanist/feeds/colorbot");
+      client.subscribe("YOUR_AIO_FEED");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
