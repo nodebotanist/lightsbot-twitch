@@ -75,11 +75,11 @@ let randomcolors = ['rebeccapurple', 'blue', 'rainbow', 'purple', 'orange', 'gre
 let randomIndex = 0
 
 setInterval(()=>{
-  randomIndex = Math.round((Math.random() * randomcolors.length))
+  randomIndex = Math.floor((Math.random() * randomcolors.length))
   if(randomcolors[randomIndex] == 'rainbow'){
     mqttClient.publish('nodebotanist/feeds/colorbot', 'rainbow')
-        client.action(twitchIRC, 'Random Rainbow!')
-      } else {
+    client.action(twitchIRC, 'Random Rainbow!')
+  } else {
     let lightColor = color(randomcolors[randomIndex])
     let result = `${lightColor.color[0]},${lightColor.color[1]},${lightColor.color[2]}`
     mqttClient.publish('nodebotanist/feeds/colorbot', result)
