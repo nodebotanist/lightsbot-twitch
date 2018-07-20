@@ -71,6 +71,22 @@ let knownCommands = {
   }
 }
 
+let randomcolors = ['rebeccapurple', 'blue', 'rainbow', 'purple', 'orange', 'green', 'red']
+let randomIndex = 0
+
+setInterval(()=>{
+  randomIndex = Math.round((Math.random() * randomcolors.length))
+  if(randomcolors[randomIndex] == 'rainbow'){
+    mqttClient.publish('nodebotanist/feeds/colorbot', 'rainbow')
+        client.action(twitchIRC, 'Random Rainbow!')
+      } else {
+    let lightColor = color(randomcolors[randomIndex])
+    let result = `${lightColor.color[0]},${lightColor.color[1]},${lightColor.color[2]}`
+    mqttClient.publish('nodebotanist/feeds/colorbot', result)
+    client.action(twitchIRC, `Random Color R:${lightColor.color[0]} G:${lightColor.color[1]} B:${lightColor.color[2]}!`)
+  }
+}, 60000)
+
 // Called every time a message comes in:
 function onMessageHandler (target, context, msg, self) {
   if (self) { return } // Ignore messages from the bot
